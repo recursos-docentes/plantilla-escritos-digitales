@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">Escrito</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light;
+  --bg: #f0ece2; --panel: #fffdf6; --panel-2: #f5f0e4; --border: #d9cdb7;
+  --text: #2c2117; --muted: #7a6e5a; --amber: #9b2335; --amber-dim: #9b233520;
+  --green: #2d6a4f; --green-dim: #2d6a4f15; --red: #9b2335; --red-dim: #9b233518;
+  --mono: ui-monospace, "Fira Code", Consolas, "Courier New", monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Lora', Georgia, serif;
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+  padding: 24px 16px 48px;
+}
+
+/* ── ventana ── */
+.window {
+  max-width: 780px;
+  margin: 0 auto;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.titlebar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #e4ddd0;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  user-select: none;
+}
+.dot { width: 12px; height: 12px; border-radius: 50%; }
+.dot.red    { background: #ff5f57; }
+.dot.yellow { background: #febc2e; }
+.dot.green  { background: #28c840; }
+.tab-title  { margin-left: 10px; font-size: 13px; color: var(--muted); flex: 1; }
+.build-status           { font-size: 12px; color: var(--muted); }
+.build-status.ok        { color: var(--green); }
+
+.content { padding: 24px 28px 32px; }
+
+/* ── splash ── */
+.splash {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px 20px 44px;
+  gap: 20px;
+}
+.splash h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--amber);
+  letter-spacing: .02em;
+}
+.splash p {
+  color: var(--muted);
+  font-size: 13.5px;
+  max-width: 480px;
+  line-height: 1.65;
+}
+.splash input[type="text"] {
+  width: 100%;
+  max-width: 380px;
+  background: #12131c;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 14px;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color .15s;
+  text-align: center;
+}
+.splash input[type="text"]:focus { border-color: var(--amber); }
+.btn-begin {
+  background: var(--amber);
+  color: #fffdf6;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Lora', Georgia, serif;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 12px 32px;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.btn-begin:hover { opacity: .88; }
+.splash-err { color: var(--red); font-size: 13px; min-height: 18px; }
+
+/* ── preguntas ── */
+.quiz-header { margin-bottom: 32px; }
+.quiz-header h1 { color: var(--amber); font-size: 17px; margin-bottom: 6px; }
+.quiz-header p  { color: var(--muted); font-size: 13px; }
+
+.question {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px 22px;
+  margin-bottom: 16px;
+}
+.q-num  { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+.qtype  { display: inline-block; font-size: 11px; color: var(--amber);
+          background: var(--amber-dim); padding: 2px 8px; border-radius: 4px;
+          margin-bottom: 10px; }
+.qtype-open { color: var(--green); background: var(--green-dim); }
+.q-text { font-size: 14px; margin-bottom: 12px; }
+
+.code-block {
+  display: block;
+  background: #12131c;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-family: var(--mono);
+  font-size: 13px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin-bottom: 14px;
+  line-height: 1.7;
+}
+.code-block input[type="text"] {
+  background: #1e2030;
+  border: 1px solid #4a4d6a;
+  border-radius: 4px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 2px 8px;
+  width: 160px;
+  outline: none;
+}
+.code-block input[type="text"]:focus { border-color: var(--amber); }
+.kw   { color: #569cd6; }
+.type { color: #4ec9b0; }
+.fn   { color: #dcdcaa; }
+.str  { color: #ce9178; }
+.cm   { color: #6a9955; }
+
+.options, .tf-row { display: flex; flex-direction: column; gap: 8px; }
+.tf-row { flex-direction: row; gap: 12px; }
+
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #12131c;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: border-color .12s, background .12s;
+}
+.option:hover   { border-color: var(--amber); background: var(--amber-dim); }
+.option.selected { border-color: var(--amber); background: var(--amber-dim); }
+.option.locked  { cursor: default; }
+.option input[type="radio"] { margin-top: 2px; accent-color: var(--amber); flex-shrink: 0; }
+.option-label { font-size: 13.5px; line-height: 1.45; }
+
+.open-answer {
+  width: 100%;
+  background: #12131c;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13.5px;
+  padding: 10px 14px;
+  resize: vertical;
+  outline: none;
+  transition: border-color .15s;
+}
+.open-answer:focus { border-color: var(--amber); }
+
+/* ── footer / enviar ── */
+.quiz-footer {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+.status-msg            { font-size: 12px; color: var(--muted); align-self: flex-start; }
+.status-msg.warn       { color: var(--amber); }
+.status-msg.error      { color: var(--red); }
+.status-msg.ok         { color: var(--green); }
+.btn-submit {
+  background: var(--amber); color: #fffdf6; border: none; border-radius: 6px;
+  font-family: 'Lora', Georgia, serif; font-size: 14px; font-weight: 600;
+  padding: 10px 26px; cursor: pointer; transition: opacity .15s;
+}
+.btn-submit:hover    { opacity: .88; }
+.btn-submit:disabled { opacity: .4; cursor: default; }
+
+/* ── pantalla de gracias ── */
+.thanks { text-align: center; padding: 48px 24px; }
+.thanks h2 { color: var(--green); font-size: 22px; margin-bottom: 8px; }
+.thanks p  { color: var(--muted); font-size: 14px; }
+
+/* ── autocorrección ── */
+.grade-box {
+  margin: 28px auto 0;
+  max-width: 560px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-align: left;
+  overflow: hidden;
+}
+.grade-title {
+  background: #e4ddd0;
+  border-bottom: 1px solid var(--border);
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--amber);
+  letter-spacing: .5px;
+}
+.grade-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.grade-table td { padding: 7px 16px; border-bottom: 1px solid var(--border); }
+.grade-table tr:last-child td { border-bottom: none; }
+.grade-table td:first-child { color: var(--text); }
+.grade-table td:last-child { width: 32px; text-align: center; font-size: 16px; }
+.grade-ok  { color: var(--green); }
+.grade-err { color: var(--red); }
+.grade-score {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--text);
+}
+.grade-score strong { color: var(--amber); }
+.grade-open {
+  padding: 6px 16px 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+@media (max-width: 520px) {
+  body { padding: 0; }
+  .window { border-radius: 0; }
+  .titlebar { border-radius: 0; padding: 10px 12px; }
+}
+</style>
+</head>
+<body>
+
+<div class="window">
+  <div class="titlebar">
+    <span class="dot red"></span>
+    <span class="dot yellow"></span>
+    <span class="dot green"></span>
+    <span class="tab-title" id="title-tab">Escrito</span>
+    <span class="build-status" id="build-status">● en progreso</span>
+  </div>
+  <div class="content" id="main-content"><!-- JS --></div>
+</div>
+
+<script>
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║              ZONA DE CONFIGURACIÓN — EDITÁ SOLO ESTA SECCIÓN            ║
+// ║                                                                          ║
+// ║  Todo lo que necesitás cambiar está aquí.                                ║
+// ║  El resto del archivo NO hace falta tocarlo.                             ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
+
+// ── 1. URL del Apps Script ─────────────────────────────────────────────────
+//    Ir a: Apps Script → Implementar → Administrar implementaciones
+//    Copiar la "URL de la aplicación web" y pegarla aquí.
+const SHEET_WEBAPP_URL = "https://script.google.com/macros/s/REEMPLAZAR_CON_TU_URL/exec";
+
+// ── 2. Clave única del examen ──────────────────────────────────────────────
+//    Evita que un estudiante que ya envió pueda recargar y volver a hacerlo.
+//    IMPORTANTE: cambiar este valor para cada examen nuevo.
+//    Sin espacios, sin acentos. Ejemplo: "prog2_servlets_set2025"
+const LS_KEY = "materia_tema_fecha";
+
+// ── 3. Título del examen ───────────────────────────────────────────────────
+//    Aparece en la barra del navegador, en la pestaña y en la pantalla
+//    de inicio. Ejemplo: "Quiz_Ciclos.java"
+const QUIZ_TITLE = "Nombre del Examen";
+
+// ── 4. Encabezado y subtítulo en la pantalla de inicio ────────────────────
+//    QUIZ_HEADER: el título grande que ve el estudiante al entrar.
+//    QUIZ_SUBTITLE: instrucción o descripción breve del examen.
+const QUIZ_HEADER   = "Nombre del Examen";
+const QUIZ_SUBTITLE = "Escribí tu nombre y apellido para comenzar. " +
+                      "El cuestionario se abre en pantalla completa; " +
+                      "si salís de pantalla completa antes de terminar, " +
+                      "se envía automáticamente con lo que estés respondido hasta ese momento.";
+
+// ── 5. Encabezado dentro del cuestionario ─────────────────────────────────
+//    Texto que aparece en la parte superior del examen mientras se responde.
+const QUIZ_SECTION_TITLE = "// Nombre de la materia — Escrito";
+const QUIZ_SECTION_SUB   = "Respondé lo que sabés y enviá cuando estés listo/a.";
+
+
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║                         PREGUNTAS DEL EXAMEN                            ║
+// ║                                                                          ║
+// ║  Tipos disponibles:                                                      ║
+// ║  ● "open"   → pregunta abierta (el estudiante escribe libremente)        ║
+// ║  ● "single" → opción única (radio buttons)                               ║
+// ║  ● "tf"     → verdadero / falso                                          ║
+// ║  ● "blank"  → completar blancos en un bloque de código                   ║
+// ║                                                                          ║
+// ║  Reglas importantes:                                                     ║
+// ║  ✔ Cada pregunta debe tener un "id" único (q1, q2, q3…)                  ║
+// ║  ✔ Los ids deben coincidir exactamente con los del Apps Script            ║
+// ║  ✔ Las preguntas "open" se corrigen manualmente en la planilla            ║
+// ║  ✔ Las preguntas "single", "tf" y "blank" se autocorrigen                 ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
+
+const questions = [
+
+  // ┌─────────────────────────────────────────────────────────────────────┐
+  // │  TIPO: open — Pregunta abierta                                       │
+  // │  El estudiante escribe su respuesta libremente en un textarea.       │
+  // │  Solo requiere: id, type, text                                       │
+  // └─────────────────────────────────────────────────────────────────────┘
+  {
+    id: "q1", type: "open",
+    text: "Con tus palabras, explicá qué es [concepto a evaluar]."
+  },
+
+  // ┌─────────────────────────────────────────────────────────────────────┐
+  // │  TIPO: single — Opción única                                         │
+  // │  El estudiante elige una opción entre varias (radio buttons).        │
+  // │  Requiere: id, type, text, options (array de {id, label})            │
+  // │  En el Apps Script: indicar el id de la opción correcta ("a"-"d")   │
+  // └─────────────────────────────────────────────────────────────────────┘
+  {
+    id: "q2", type: "single",
+    text: "¿Cuál de las siguientes afirmaciones es correcta sobre [tema]?",
+    options: [
+      { id: "a", label: "Primera opción" },
+      { id: "b", label: "Segunda opción (esta es la correcta)" },
+      { id: "c", label: "Tercera opción" },
+      { id: "d", label: "Cuarta opción" }
+    ]
+  },
+
+  // ┌─────────────────────────────────────────────────────────────────────┐
+  // │  TIPO: tf — Verdadero / Falso                                        │
+  // │  El estudiante elige entre Verdadero y Falso.                        │
+  // │  Solo requiere: id, type, text                                       │
+  // │  En el Apps Script: indicar "true" o "false"                        │
+  // └─────────────────────────────────────────────────────────────────────┘
+  {
+    id: "q3", type: "tf",
+    text: "Afirmación sobre [tema a evaluar]. Verdadero o falso."
+  },
+
+  // ┌─────────────────────────────────────────────────────────────────────┐
+  // │  TIPO: blank — Completar blancos en un bloque de código              │
+  // │  Usar __BLANK0__, __BLANK1__, etc. como marcadores en el código.     │
+  // │  El valor de "blanks" debe coincidir con la cantidad de marcadores.  │
+  // │  En el Apps Script: indicar las respuestas como array en orden.      │
+  // │  Requiere: id, type, text, code, blanks                              │
+  // └─────────────────────────────────────────────────────────────────────┘
+  {
+    id: "q4", type: "blank",
+    text: "Completar el siguiente fragmento de código:",
+    code: `resultado = __BLANK0__ + __BLANK1__;`,
+    blanks: 2
+  },
+
+  // ┌─────────────────────────────────────────────────────────────────────┐
+  // │  TIPO: open — Pregunta abierta CON bloque de código                  │
+  // │  Igual que "open", pero muestra un fragmento de código antes del     │
+  // │  área de respuesta. Útil para "explicar qué hace este código".       │
+  // └─────────────────────────────────────────────────────────────────────┘
+  {
+    id: "q5", type: "open",
+    text: "Explicar qué hace el siguiente código.",
+    code: `// Pegá aquí el fragmento de código que querés que expliquen\nSystem.out.println("Hola");`
+  },
+
+  // ┌─────────────────────────────────────────────────────────────────────┐
+  // │  TIPO: single CON bloque de código                                   │
+  // │  Igual que "single", pero muestra un fragmento antes de las          │
+  // │  opciones. Útil para "¿cuál es la salida?" o "¿qué error tiene?"    │
+  // └─────────────────────────────────────────────────────────────────────┘
+  {
+    id: "q6", type: "single",
+    text: "¿Qué imprime el siguiente código?",
+    code: `System.out.println(2 + 3);`,
+    options: [
+      { id: "a", label: "\"2 + 3\"" },
+      { id: "b", label: "5" },
+      { id: "c", label: "23" },
+      { id: "d", label: "Error de compilación" }
+    ]
+  },
+
+  // ┌─────────────────────────────────────────────────────────────────────┐
+  // │  TIPO: tf CON bloque de código                                       │
+  // │  Igual que "tf", pero muestra un fragmento antes de las opciones.    │
+  // └─────────────────────────────────────────────────────────────────────┘
+  {
+    id: "q7", type: "tf",
+    text: "¿El siguiente código produce un error? Verdadero o falso.",
+    code: `int x = 5;\nString s = x;`
+  }
+
+  // ── Para agregar más preguntas: copiar uno de los bloques de arriba,
+  //    cambiar el id (q8, q9…), el texto y las opciones/blancos.
+  //    Acordarse de agregar una coma al final del bloque anterior.
+
+];
+
+// ╔══════════════════════════════════════════════════════════════════════════╗
+// ║          FIN DE LA ZONA DE CONFIGURACIÓN                                 ║
+// ║          El código de abajo no hace falta modificarlo.                   ║
+// ╚══════════════════════════════════════════════════════════════════════════╝
+
+/* ─── Actualizar título de la página y la barra ─────────────────────────── */
+document.title = QUIZ_TITLE;
+var titleTab = document.getElementById("title-tab");
+if (titleTab) titleTab.textContent = QUIZ_TITLE;
+
+/* ─── ESTADO ─────────────────────────────────────────────────────────────── */
+var state   = {};
+var locked  = false;
+var quizFinished   = false;
+var quizStarted    = false;
+var alreadySubmitted = false;
+var studentName    = "";
+
+var typeLabels = {
+  single: "opción única", tf: "verdadero / falso",
+  blank: "completar",     open: "pregunta abierta"
+};
+
+/* ─── SHUFFLE (orden aleatorio) ─────────────────────────────────────────── */
+function shuffle(arr) {
+  for (var i = arr.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+  }
+}
+shuffle(questions);
+
+/* ─── PANTALLA DE INICIO ─────────────────────────────────────────────────── */
+function renderSplash() {
+  document.getElementById("main-content").innerHTML =
+    '<div class="splash">' +
+    '<h1>' + escHtml(QUIZ_HEADER) + '</h1>' +
+    '<p>' + escHtml(QUIZ_SUBTITLE) + '</p>' +
+    '<input type="text" id="splash-name" placeholder="Nombre y apellido" autocomplete="off" spellcheck="false" />' +
+    '<div class="splash-err" id="splash-err"></div>' +
+    '<button class="btn-begin" id="btn-begin" onclick="beginQuiz()">Comenzar</button>' +
+    '</div>';
+
+  document.getElementById("splash-name").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") beginQuiz();
+  });
+}
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function beginQuiz() {
+  var nameEl = document.getElementById("splash-name");
+  var name   = nameEl ? nameEl.value.trim() : "";
+  if (!name) {
+    document.getElementById("splash-err").textContent = "⚠ Ingresá tu nombre antes de comenzar.";
+    nameEl.focus();
+    return;
+  }
+  studentName  = name;
+  quizStarted  = true;
+  requestFS();
+  renderQuiz();
+}
+
+/* ─── QUIZ ───────────────────────────────────────────────────────────────── */
+function renderQuiz() {
+  var html =
+    '<div class="quiz-header">' +
+    '<h1>' + escHtml(QUIZ_SECTION_TITLE) + '</h1>' +
+    '<p>' + escHtml(QUIZ_SECTION_SUB) + '</p>' +
+    '</div>';
+
+  questions.forEach(function(q, i) {
+    var isOpen     = q.type === "open";
+    var qtypeClass = isOpen ? "qtype qtype-open" : "qtype";
+    html += '<div class="question" id="wrap-' + q.id + '">' +
+            '<div class="q-num">Pregunta ' + (i + 1) + ' de ' + questions.length + '</div>' +
+            '<div class="' + qtypeClass + '">' + typeLabels[q.type] + '</div>' +
+            '<div class="q-text">' + q.text + '</div>';
+
+    if (q.code) {
+      var codeHtml = q.code;
+      if (q.type === "blank") {
+        for (var b = 0; b < q.blanks; b++) {
+          codeHtml = codeHtml.replace(
+            "__BLANK" + b + "__",
+            '<input type="text" data-qid="' + q.id + '" data-blank="' + b + '" placeholder="?" autocomplete="off" spellcheck="false" />'
+          );
+        }
+      }
+      html += '<code class="code-block">' + codeHtml + '</code>';
+    }
+
+    if (q.type === "open") {
+      html += '<textarea class="open-answer" data-qid="' + q.id + '" placeholder="Escribí tu respuesta acá..." rows="4"></textarea>';
+    } else if (q.type === "single") {
+      html += '<div class="options">';
+      q.options.forEach(function(opt) {
+        html += '<label class="option" data-qid="' + q.id + '" data-val="' + opt.id + '">' +
+                '<input type="radio" name="' + q.id + '" value="' + opt.id + '" />' +
+                '<span class="option-label"><strong>' + opt.id + ')</strong> ' + opt.label + '</span>' +
+                '</label>';
+      });
+      html += '</div>';
+    } else if (q.type === "tf") {
+      html += '<div class="tf-row">' +
+              '<label class="option" data-qid="' + q.id + '" data-val="true">' +
+              '<input type="radio" name="' + q.id + '" value="true" />' +
+              '<span class="option-label">✓ Verdadero</span></label>' +
+              '<label class="option" data-qid="' + q.id + '" data-val="false">' +
+              '<input type="radio" name="' + q.id + '" value="false" />' +
+              '<span class="option-label">✗ Falso</span></label>' +
+              '</div>';
+    }
+    html += '</div>';
+  });
+
+  html += '<div class="quiz-footer">' +
+          '<div class="status-msg" id="status-msg"></div>' +
+          '<button class="btn-submit" id="btn-submit" onclick="handleSubmit()">Enviar respuestas →</button>' +
+          '</div>';
+
+  document.getElementById("main-content").innerHTML = html;
+  attachListeners();
+}
+
+function attachListeners() {
+  document.querySelectorAll(".open-answer").forEach(function(ta) {
+    ta.addEventListener("input", function() { state[ta.dataset.qid] = ta.value; });
+  });
+  document.querySelectorAll(".option").forEach(function(lbl) {
+    lbl.addEventListener("click", function() {
+      if (locked) return;
+      state[lbl.dataset.qid] = lbl.dataset.val;
+      document.querySelectorAll('.option[data-qid="' + lbl.dataset.qid + '"]').forEach(function(l) {
+        l.classList.toggle("selected", l.dataset.val === lbl.dataset.val);
+      });
+    });
+  });
+  document.querySelectorAll("[data-blank]").forEach(function(inp) {
+    inp.addEventListener("input", function() {
+      state[inp.dataset.qid + "_" + inp.dataset.blank] = inp.value;
+    });
+  });
+}
+
+/* ─── SUBMIT ─────────────────────────────────────────────────────────────── */
+function buildPayload() {
+  var answers = {};
+  questions.forEach(function(q) {
+    if (q.type === "blank") {
+      var parts = [];
+      for (var b = 0; b < q.blanks; b++) parts.push(state[q.id + "_" + b] || "");
+      answers[q.id] = parts.join(" | ");
+    } else {
+      answers[q.id] = state[q.id] || "";
+    }
+  });
+  answers.nombre    = studentName;
+  answers.timestamp = new Date().toISOString();
+  return answers;
+}
+
+function lockAll() {
+  locked = true;
+  document.querySelectorAll("textarea, input").forEach(function(el) { el.disabled = true; });
+  document.querySelectorAll(".option").forEach(function(el) { el.classList.add("locked"); });
+}
+
+function renderThanks(gradeData) {
+  var gradeHtml = "";
+
+  if (gradeData && gradeData.results) {
+    var qids = Object.keys(gradeData.results);
+    var rows = "";
+    qids.forEach(function(qid) {
+      var q = questions.find(function(x) { return x.id === qid; });
+      if (!q) return;
+      var label = q.text.length > 60 ? q.text.substring(0, 60) + "…" : q.text;
+      var ok    = gradeData.results[qid] === "correcta";
+      rows += '<tr><td>' + escHtml(label) + '</td>' +
+              '<td class="' + (ok ? "grade-ok" : "grade-err") + '">' + (ok ? "✓" : "✗") + '</td></tr>';
+    });
+
+    gradeHtml =
+      '<div class="grade-box">' +
+      '<div class="grade-title">// Autocorrección</div>' +
+      '<table class="grade-table"><tbody>' + rows + '</tbody></table>' +
+      '<div class="grade-score">Resultado automático: <strong>' + gradeData.correct + '/' + gradeData.total + '</strong></div>' +
+      '<div class="grade-open">Las preguntas abiertas serán revisadas por el/la docente.</div>' +
+      '</div>';
+  }
+
+  document.getElementById("main-content").innerHTML =
+    '<div class="thanks">' +
+    '<h2>✓ Escrito enviado</h2>' +
+    '<p>Tus respuestas fueron registradas correctamente.</p>' +
+    gradeHtml +
+    '</div>';
+
+  var bs = document.getElementById("build-status");
+  if (bs) { bs.textContent = "● enviado"; bs.className = "build-status ok"; }
+  quizFinished = true;
+}
+
+function performSubmit(payload) {
+  quizFinished = true;
+  lockAll();
+
+  var btn = document.getElementById("btn-submit");
+  if (btn) { btn.disabled = true; btn.textContent = "Enviando…"; }
+  var msg = document.getElementById("status-msg");
+  if (msg) { msg.textContent = "Enviando respuestas…"; msg.className = "status-msg"; }
+
+  // JSONP: inyectamos un <script> que llama al Apps Script y recibimos
+  // la respuesta con la calificación automática, sin problemas de CORS.
+  var cbName   = "_quizCb_" + Date.now();
+  var scriptEl = null;
+  var timer    = null;
+
+  function cleanup() {
+    clearTimeout(timer);
+    delete window[cbName];
+    if (scriptEl && scriptEl.parentNode) scriptEl.parentNode.removeChild(scriptEl);
+  }
+
+  window[cbName] = function(data) {
+    cleanup();
+    try { localStorage.setItem(LS_KEY, "1"); } catch(e) {}
+    renderThanks(data);
+  };
+
+  // Si el script no responde en 15 s, mostramos la pantalla de enviado
+  // igual (el Apps Script probablemente ya guardó la respuesta)
+  timer = setTimeout(function() {
+    cleanup();
+    try { localStorage.setItem(LS_KEY, "1"); } catch(e) {}
+    renderThanks(null);
+  }, 15000);
+
+  scriptEl = document.createElement("script");
+  scriptEl.onerror = function() {
+    cleanup();
+    try { localStorage.setItem(LS_KEY, "1"); } catch(e) {}
+    renderThanks(null);
+  };
+
+  var encoded = encodeURIComponent(JSON.stringify(payload));
+  scriptEl.src = SHEET_WEBAPP_URL + "?callback=" + cbName + "&data=" + encoded;
+  document.head.appendChild(scriptEl);
+}
+
+function handleSubmit() {
+  if (locked || quizFinished) return;
+  performSubmit(buildPayload());
+}
+
+/* ─── FULLSCREEN ─────────────────────────────────────────────────────────── */
+function isFullscreen() {
+  return !!(document.fullscreenElement
+          || document.webkitFullscreenElement
+          || document.mozFullScreenElement);
+}
+
+function requestFS() {
+  var el = document.documentElement;
+  var fn = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen;
+  if (fn) fn.call(el).catch(function() {});
+}
+
+function onFsChange() {
+  if (!quizStarted || quizFinished || alreadySubmitted) return;
+  if (!isFullscreen()) {
+    performSubmit(buildPayload());
+  }
+}
+
+document.addEventListener("fullscreenchange",       onFsChange);
+document.addEventListener("webkitfullscreenchange", onFsChange);
+document.addEventListener("mozfullscreenchange",    onFsChange);
+
+/* ─── INIT ───────────────────────────────────────────────────────────────── */
+try {
+  if (localStorage.getItem(LS_KEY) === "1") {
+    alreadySubmitted = true;
+    renderThanks(null);
+  } else {
+    renderSplash();
+  }
+} catch(e) {
+  renderSplash();
+}
+</script>
+</body>
+</html>
