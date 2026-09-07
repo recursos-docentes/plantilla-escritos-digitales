@@ -1,4 +1,4 @@
-// ╔═══════════════════════════════════════════════════════════╗
+// ╔═════════════════════════════════════════════════════════════════════════════╗
 // ║         SCRIPT DE GOOGLE APPS — TEMPLATE PARA ESCRITOS DIGITALES            ║
 // ║                                                                             ║
 // ║  Instrucciones de instalación:                                              ║
@@ -13,7 +13,7 @@
 // ║  IMPORTANTE: cada vez que se modifique este script hay que crear una        ║
 // ║  NUEVA VERSIÓN del deployment para que los cambios tomen efecto:            ║
 // ║  Implementar → Administrar implementaciones → ✏️ → Nueva versión → Guardar  ║
-// ╚═══════════════════════════════════════════════════════════╝
+// ╚═════════════════════════════════════════════════════════════════════════════╝
 
 
 // ══════════════════════════════════════════════════════════════════
