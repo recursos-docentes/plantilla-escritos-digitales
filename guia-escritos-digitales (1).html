@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cómo armar un escrito digital — Guía paso a paso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    color-scheme: light;
+    --bg: #f0ece2;
+    --panel: #fffdf6;
+    --panel-2: #f5f0e4;
+    --border: #d9cdb7;
+    --text: #2c2117;
+    --muted: #7a6e5a;
+    --amber: #9b2335;        /* acento principal — rojo vino */
+    --amber-dim: #9b233520;
+    --green: #2d6a4f;
+    --green-dim: #2d6a4f15;
+    --red: #9b2335;
+    --red-dim: #9b233518;
+    --mono: ui-monospace, "Fira Code", Consolas, "Courier New", monospace;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Lora', Georgia, serif;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .wrap{ max-width:820px; margin:0 auto; padding:0 24px 100px; }
+
+  header.hero{
+    padding:56px 0 32px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:32px;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12.5px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--amber);
+    font-weight:600;
+    margin-bottom:14px;
+  }
+  h1{
+    font-size:clamp(28px,4vw,40px);
+    line-height:1.18;
+    margin:0 0 16px;
+    font-weight:600;
+  }
+  .tagline{
+    color:var(--muted);
+    font-size:18px;
+    font-style:italic;
+    max-width:60ch;
+  }
+
+  /* ---- pestañas ---- */
+  .tabs{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:40px;
+  }
+  .tab-btn{
+    font-family:var(--mono);
+    font-size:12.5px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    color:var(--muted);
+    padding:9px 15px;
+    border-radius:999px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:background .15s, color .15s, border-color .15s;
+  }
+  .tab-btn .num{ color:var(--amber); font-weight:700; margin-right:6px; }
+  .tab-btn:hover{ border-color:var(--amber); }
+  .tab-btn.active{ background:var(--amber); border-color:var(--amber); color:#fffdf6; }
+  .tab-btn.active .num{ color:#fffdf6; }
+
+  /* ---- paneles ---- */
+  .panel{ display:none; }
+  .panel.active{ display:block; animation:fade .2s ease; }
+  @keyframes fade{ from{ opacity:0; transform:translateY(4px); } to{ opacity:1; transform:translateY(0); } }
+
+  .panel h2{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    font-size:24px;
+    font-weight:600;
+    margin:0 0 8px;
+  }
+  .panel h2 .n{
+    font-family:'Lora', Georgia, serif;
+    font-style:italic;
+    font-weight:600;
+    font-size:34px;
+    color:var(--amber);
+    line-height:1;
+  }
+  .panel .sub{ color:var(--muted); margin:0 0 20px; }
+
+  h3{ font-size:17px; font-weight:600; margin:28px 0 10px; }
+
+  p{ margin:0 0 14px; }
+  ul, ol{ padding-left:24px; margin:0 0 14px; }
+  li{ margin-bottom:6px; }
+
+  strong{ color:var(--text); }
+
+  /* ---- tablas ---- */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin:18px 0 22px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:8px;
+    overflow:hidden;
+    font-size:15px;
+  }
+  th, td{ padding:10px 14px; border-bottom:1px solid var(--border); text-align:left; vertical-align:top; }
+  th{ background:var(--panel-2); font-weight:600; font-family:var(--mono); font-size:12.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  tr:last-child td{ border-bottom:none; }
+  td code{ font-family:var(--mono); background:var(--panel-2); padding:1px 6px; border-radius:4px; font-size:13px; }
+
+  /* ---- callouts ---- */
+  .callout{
+    border:1px solid var(--border);
+    border-left:4px solid var(--muted);
+    background:var(--panel);
+    border-radius:6px;
+    padding:14px 18px;
+    margin:18px 0;
+    font-size:15.5px;
+  }
+  .callout .tag{ font-family:var(--mono); font-size:11.5px; text-transform:uppercase; letter-spacing:.08em; font-weight:600; display:block; margin-bottom:4px; }
+  .callout.tip{ border-left-color:var(--green); background:var(--green-dim); }
+  .callout.tip .tag{ color:var(--green); }
+  .callout.warn{ border-left-color:var(--amber); background:var(--amber-dim); }
+  .callout.warn .tag{ color:var(--amber); }
+  .callout.info{ border-left-color:var(--muted); }
+  .callout.info .tag{ color:var(--muted); }
+
+  /* ---- bloques de código ---- */
+  .filebox{
+    background:#1d1a15;
+    border-radius:10px;
+    overflow:hidden;
+    margin:16px 0 20px;
+    box-shadow:0 1px 0 var(--border);
+  }
+  .filebox .bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:#2a251d;
+    color:#d9cdb7;
+    font-family:var(--mono);
+    font-size:12.5px;
+    padding:9px 14px;
+  }
+  .filebox .bar .copybtn{
+    font-family:var(--mono);
+    font-size:11.5px;
+    background:transparent;
+    border:1px solid #4a4235;
+    color:#d9cdb7;
+    border-radius:5px;
+    padding:3px 10px;
+    cursor:pointer;
+  }
+  .filebox .bar .copybtn:hover{ border-color:#9b8f78; }
+  .filebox .bar .copybtn.copied{ color:#7fbf9e; border-color:#7fbf9e; }
+  .filebox pre{
+    margin:0;
+    padding:16px 18px;
+    overflow-x:auto;
+    font-family:var(--mono);
+    font-size:13.3px;
+    line-height:1.55;
+    color:#f0ece2;
+    white-space:pre;
+  }
+
+  /* ---- navegación entre pestañas ---- */
+  .panel-nav{
+    display:flex;
+    justify-content:space-between;
+    margin-top:36px;
+    padding-top:20px;
+    border-top:1px solid var(--border);
+  }
+  .panel-nav button{
+    font-family:'Lora', Georgia, serif;
+    font-size:14.5px;
+    background:none;
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:8px 16px;
+    border-radius:8px;
+    cursor:pointer;
+  }
+  .panel-nav button:hover{ border-color:var(--amber); color:var(--amber); }
+  .panel-nav button:disabled{ opacity:0; pointer-events:none; }
+
+  /* ---- botón CTA final ---- */
+  .cta{
+    text-align:center;
+    padding:40px 24px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+  }
+  .cta a.btn{
+    display:inline-block;
+    margin-top:14px;
+    background:var(--amber);
+    color:#fffdf6;
+    font-family:'Lora', Georgia, serif;
+    font-weight:600;
+    text-decoration:none;
+    padding:12px 26px;
+    border-radius:8px;
+  }
+  .cta a.btn:hover{ opacity:.9; }
+
+  footer{
+    text-align:center;
+    color:var(--muted);
+    font-size:13.5px;
+    margin-top:56px;
+    padding-top:24px;
+    border-top:1px solid var(--border);
+    font-family:var(--mono);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">Recursos docentes</div>
+    <h1>Cómo armar un escrito digital<br>paso a paso</h1>
+    <p class="tagline">De los apuntes de clase a un examen autocorregido, publicado y listo para tomar en la sala de informática.</p>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab-btn" data-tab="arquitectura"><span class="num">1</span>Arquitectura</button>
+    <button class="tab-btn" data-tab="descargar"><span class="num">2</span>Descargar la plantilla</button>
+    <button class="tab-btn" data-tab="preguntas"><span class="num">3</span>Preguntas con IA</button>
+    <button class="tab-btn" data-tab="pegar-html"><span class="num">4</span>Pegar en el HTML</button>
+    <button class="tab-btn" data-tab="planilla"><span class="num">5</span>Planilla y Code.gs</button>
+    <button class="tab-btn" data-tab="publicar-app"><span class="num">6</span>Publicar app web</button>
+    <button class="tab-btn" data-tab="conectar"><span class="num">7</span>Conectar HTML</button>
+    <button class="tab-btn" data-tab="publicar-html"><span class="num">8</span>Publicar y probar</button>
+    <button class="tab-btn" data-tab="repo"><span class="num">9</span>Repositorio</button>
+  </div>
+
+  <!-- ============================================================ -->
+  <section class="panel" id="panel-arquitectura">
+    <h2><span class="n">1</span>Arquitectura del sistema</h2>
+    <p class="sub">Antes de tocar nada, conviene entender qué hace cada pieza.</p>
+
+    <p>El sistema consta de <strong>dos archivos</strong>, y cada uno vive en un lugar distinto:</p>
+
+    <table>
+      <tr><th>Archivo</th><th>Dónde vive</th><th>Qué hace</th></tr>
+      <tr>
+        <td><code>escrito-template.html</code></td>
+        <td>Publicado como sitio (GitHub Pages u otro hosting)</td>
+        <td>Es el examen en sí: preguntas, pantalla completa forzada, anti-doble-envío. <strong>No contiene ninguna respuesta correcta.</strong></td>
+      </tr>
+      <tr>
+        <td><code>Code.gs</code></td>
+        <td>Pegado en el editor de Apps Script de una Google Sheet</td>
+        <td>Recibe cada intento, corrige y guarda la fila en la planilla. Ahí — y solo ahí — vive la clave de respuestas.</td>
+      </tr>
+    </table>
+
+    <p>Esa separación es la que impide ver las respuestas correctas incluso abriendo el código fuente del HTML (F12): simplemente no están ahí.</p>
+
+    <div class="callout info">
+      <span class="tag">Lo que se va a construir</span>
+      Preguntas armadas a partir de apuntes de clase → pegadas en el HTML → una planilla con Code.gs → la clave de respuestas en Code.gs → todo publicado y probado.
+    </div>
+
+    <div class="panel-nav"><button disabled>← Anterior</button><button class="next">Siguiente →</button></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="panel" id="panel-descargar">
+    <h2><span class="n">2</span>Descargar la plantilla</h2>
+    <p class="sub">Punto de partida: el repositorio con los dos archivos ya armados, listos para adaptar.</p>
+
+    <ol>
+      <li>Entrar a la página del repositorio: <a href="https://github.com/recursos-docentes/plantilla-escritos-digitales" target="_blank" rel="noopener">github.com/recursos-docentes/plantilla-escritos-digitales</a>.</li>
+      <li>Hacer clic en el botón verde <strong>Code</strong> y elegir <strong>Download ZIP</strong>.</li>
+      <li>Descomprimir el archivo descargado en cualquier carpeta.</li>
+    </ol>
+
+    <p>El contenido incluye:</p>
+    <ul>
+      <li><code>escrito-template.html</code> — el examen, autocontenido (HTML + CSS + JS en un solo archivo)</li>
+      <li><code>Code.gs</code> — el script de corrección y guardado</li>
+      <li><code>README.md</code> — la documentación técnica completa, para consultar en caso de necesitar más detalle en algún paso</li>
+    </ul>
+
+    <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="panel" id="panel-preguntas">
+    <h2><span class="n">3</span>Generar las preguntas con IA</h2>
+    <p class="sub">No hace falta escribir el array de preguntas a mano.</p>
+
+    <p>Las preguntas se pueden armar a partir de un cuaderno de <strong>NotebookLM</strong> con apuntes de clase ya cargados, o pegando esos apuntes directamente en <strong>Gemini</strong>. En cualquiera de los dos casos, el mismo prompt le pide a la IA que devuelva el contenido ya en el formato exacto que necesitan el HTML y el Code.gs — alcanza con copiar y pegar, sin retocar la estructura.</p>
+
+    <div class="callout tip">
+      <span class="tag">Cómo usarlo</span>
+      En NotebookLM: abrir el cuaderno con las fuentes cargadas y pegar el prompt en el chat. En Gemini sin NotebookLM: adjuntar o pegar los apuntes correspondientes en el mismo mensaje, antes del prompt.
+    </div>
+
+    <div class="filebox">
+      <div class="bar"><span>prompt para NotebookLM / Gemini</span><button class="copybtn" id="copyPrompt">Copiar</button></div>
+      <pre id="promptText">Actuar como asistente para armar un escrito digital de [MATERIA / TEMA], para estudiantes de [GRUPO/CURSO]. Usar únicamente el contenido de las fuentes cargadas (apuntes, guías y ejercicios de clase) — no inventar contenido que no esté en ellas.
+
+Generar [CANTIDAD] preguntas que cubran los temas principales de las fuentes, combinando estos tipos:
+- "single": opción única, 4 opciones, una sola correcta
+- "tf": verdadero o falso
+- "blank": completar código con uno o más espacios en blanco
+- "open": pregunta de desarrollo, se corrige a mano, no lleva respuesta correcta
+
+Cada pregunta debe tener exactamente esta estructura (es el formato que se pega en el array "questions" de un archivo HTML):
+
+{
+  id: "qN",
+  type: "single" | "tf" | "blank" | "open",
+  text: "enunciado de la pregunta",
+  code: "fragmento de código opcional, con \n para saltos de línea",     // solo si la pregunta muestra código
+  options: [ { id: "a", label: "..." }, { id: "b", label: "..." }, { id: "c", label: "..." }, { id: "d", label: "..." } ],  // solo si type es "single"
+  blanks: 2   // solo si type es "blank": cantidad de marcadores __BLANK0__, __BLANK1__... usados en "code"
+}
+
+Reglas:
+- Los id van en orden: q1, q2, q3, etc.
+- En las preguntas "blank", el código incluye marcadores __BLANK0__, __BLANK1__, etc., y "blanks" indica cuántos hay.
+- En las preguntas "open" no van ni "options" ni respuesta correcta.
+- No marcar la opción correcta dentro del "label" que ve el estudiante.
+
+Devolver la respuesta en dos bloques de código separados, sin texto entre ellos:
+
+BLOQUE 1 — array completo, para pegar en escrito-template.html reemplazando "const questions = [...]":
+(el array de preguntas)
+
+BLOQUE 2 — para pegar en Code.gs reemplazando las variables HEADERS, QUESTION_IDS y CORRECT_ANSWERS:
+
+var HEADERS = [
+  "Timestamp",
+  "Nombre",
+  "P1 – [resumen breve de la pregunta 1]",
+  ... (una entrada por pregunta, en orden, con un resumen corto del enunciado)
+  "Autocorrección (X/[cantidad de preguntas autocorregibles, sin contar las 'open'])"
+];
+
+var QUESTION_IDS = ["q1", "q2", "q3", ...];
+
+var CORRECT_ANSWERS = {
+  // omitir por completo las preguntas "open"
+  q2: "b",                 // single → letra de la opción correcta
+  q3: "true",              // tf → "true" o "false"
+  q4: ["resp1", "resp2"]   // blank → una respuesta por cada blanco, en el mismo orden
+};</pre>
+    </div>
+
+    <div class="callout warn">
+      <span class="tag">Revisar antes de pegar</span>
+      La IA a veces se equivoca con una coma de más o de menos, o con el orden de los ids entre el bloque 1 y el bloque 2. Antes de guardar, conviene comprobar que cada <code>id</code> del array de preguntas aparezca una sola vez en <code>QUESTION_IDS</code> y, si corresponde, en <code>CORRECT_ANSWERS</code>.
+    </div>
+
+    <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="panel" id="panel-pegar-html">
+    <h2><span class="n">4</span>Pegar las preguntas en el HTML</h2>
+    <p class="sub">Todo pasa dentro de <code>escrito-template.html</code>, en la zona marcada como configuración.</p>
+
+    <p>Abrir el archivo con cualquier editor de texto y ubicar <code>const questions = [</code>. Reemplazar todo el contenido del array por el <strong>Bloque 1</strong> devuelto por la IA.</p>
+
+    <p>Junto a esa misma línea hay otras dos constantes para completar a mano:</p>
+
+    <table>
+      <tr><th>Constante</th><th>Qué poner</th></tr>
+      <tr><td><code>QUIZ_TITLE</code></td><td>El nombre del examen tal como se va a mostrar arriba, por ejemplo <code>"Programación Avanzada — Parcial 1"</code></td></tr>
+      <tr><td><code>LS_KEY</code></td><td>Un identificador único para ese escrito puntual, por ejemplo <code>"progavanzada_parcial1_2026"</code></td></tr>
+    </table>
+
+    <div class="callout warn">
+      <span class="tag">Por qué importa LS_KEY</span>
+      El sistema anti-doble-envío guarda esa clave en el navegador del estudiante. Si dos escritos distintos publicados en el mismo sitio usan la misma clave, el segundo va a aparecer como "ya enviado" sin haberse hecho. Conviene usar una clave distinta para cada escrito.
+    </div>
+
+    <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="panel" id="panel-planilla">
+    <h2><span class="n">5</span>Crear la planilla y pegar el Code.gs</h2>
+    <p class="sub">Ahí va a vivir la clave de respuestas, separada del HTML que ve el estudiante.</p>
+
+    <ol>
+      <li>Crear una <strong>Google Sheet nueva y vacía</strong> (no hace falta escribir nada en ella todavía — los encabezados los crea el script solo).</li>
+      <li>Menú <strong>Extensiones → Apps Script</strong>.</li>
+      <li>Borrar el contenido de <code>Code.gs</code> que aparece por defecto y pegar el archivo completo de la plantilla.</li>
+      <li>Reemplazar <code>HEADERS</code>, <code>QUESTION_IDS</code> y <code>CORRECT_ANSWERS</code> por el <strong>Bloque 2</strong> devuelto por la IA.</li>
+      <li>Guardar (Ctrl+S).</li>
+    </ol>
+
+    <div class="callout tip">
+      <span class="tag">Encabezados automáticos</span>
+      No hace falta escribir la fila 1 a mano en la planilla: la primera vez que llega una respuesta (o al correr la prueba manual), el script escribe los encabezados de <code>HEADERS</code> y les da formato solo.
+    </div>
+
+    <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="panel" id="panel-publicar-app">
+    <h2><span class="n">6</span>Publicar como aplicación web</h2>
+    <p class="sub">Este paso convierte el script en una URL que el HTML puede llamar.</p>
+
+    <ol>
+      <li><strong>Implementar → Nueva implementación.</strong></li>
+      <li>Tipo: <strong>Aplicación web.</strong></li>
+      <li><strong>Ejecutar como:</strong> Yo.</li>
+      <li><strong>Quién tiene acceso:</strong> Cualquier persona.</li>
+      <li>Autorizar cuando lo solicite — el aviso de "app no verificada" es normal, se trata de un script propio.</li>
+      <li>Copiar la URL que termina en <code>/exec</code> (la de la sección <strong>App web</strong>, no la de "Biblioteca").</li>
+    </ol>
+
+    <div class="callout warn">
+      <span class="tag">Para actualizar Code.gs más adelante</span>
+      Editar y guardar el script no alcanza para que los cambios se reflejen. Es necesario ir a <strong>Implementar → Administrar implementaciones → ✏️ → Nueva versión → Implementar.</strong> Crear una implementación nueva desde cero genera una URL distinta; conviene evitarlo salvo que sea necesario.
+    </div>
+
+    <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="panel" id="panel-conectar">
+    <h2><span class="n">7</span>Conectar el HTML con la planilla</h2>
+    <p class="sub">Un solo dato conecta las dos piezas.</p>
+
+    <p>Volver a <code>escrito-template.html</code>, buscar la constante <code>SHEET_WEBAPP_URL</code> y pegar ahí la URL copiada en el paso anterior.</p>
+
+    <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="panel" id="panel-publicar-html">
+    <h2><span class="n">8</span>Publicar y probar el escrito</h2>
+    <p class="sub">Último tramo antes de usarlo con estudiantes.</p>
+
+    <div class="callout info">
+      <span class="tag">Publicarlo en un sitio es opcional</span>
+      El archivo HTML funciona igual sin subirlo a ningún hosting: alcanza con entregárselo a cada estudiante como un archivo (por ejemplo, adjunto en una tarea de Classroom, por correo o por pendrive) para que lo abra directamente en el navegador. La conexión con la planilla funciona igual en los dos casos, porque no depende de dónde esté alojado el HTML — solo de la URL pegada en <code>SHEET_WEBAPP_URL</code>. Publicarlo en un sitio (GitHub Pages u otro hosting) es más cómodo si se va a reutilizar el mismo escrito varias veces o con varios grupos, porque evita repartir el archivo cada vez.
+    </div>
+
+    <ol>
+      <li>Renombrar el archivo a <code>index.html</code> si se va a publicar en un sitio (no hace falta si se va a repartir como archivo).</li>
+      <li>Publicarlo (GitHub Pages es lo más simple) o entregarlo directamente como archivo a los estudiantes.</li>
+      <li>Abrirlo y completarlo como lo haría un estudiante: revisar que solicite pantalla completa, que las preguntas se vean bien, y que al enviar aparezca la fila correspondiente en la planilla.</li>
+      <li>Probar también qué ocurre al intentar reabrirlo en el mismo navegador (debería avisar que ya fue enviado).</li>
+    </ol>
+
+    <div class="callout tip">
+      <span class="tag">Video: cómo publicar en GitHub Pages</span>
+      <p style="margin:6px 0 12px;">Para quien prefiera publicar el escrito en un sitio en vez de repartirlo como archivo, este video muestra el proceso completo sin usar la terminal (subida de archivos desde el navegador).</p>
+      <a href="https://www.youtube.com/watch?v=gi-Qan0xTkU" target="_blank" rel="noopener" style="display:block; position:relative; border-radius:8px; overflow:hidden; text-decoration:none;">
+        <img src="https://img.youtube.com/vi/gi-Qan0xTkU/hqdefault.jpg" alt="Sube tu Página Web a GitHub Pages en 5 Minutos (Tutorial Completo)" style="display:block; width:100%; height:auto;">
+        <span style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.25);">
+          <span style="width:0; height:0; border-top:16px solid transparent; border-bottom:16px solid transparent; border-left:26px solid #fffdf6; margin-left:6px;"></span>
+        </span>
+      </a>
+      <p style="margin:12px 0 0; font-size:14px;">Muestra el proceso completo de publicación en GitHub Pages.</p>
+    </div>
+
+    <div class="callout info">
+      <span class="tag">Una limitación conocida</span>
+      En iOS (Safari y cualquier otro navegador ahí, porque todos usan WebKit) no se puede forzar la pantalla completa. El escrito lo detecta y deja continuar igual, avisando, para no bloquear a esos estudiantes.
+    </div>
+
+    <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="panel" id="panel-repo">
+    <h2><span class="n">9</span>Repositorio de la plantilla</h2>
+    <p class="sub">Todo el código y la documentación técnica completa, para consultar cuando haga falta.</p>
+
+    <div class="cta">
+      <p style="margin:0; color:var(--muted);">Incluye además las decisiones técnicas detrás de cada elección (por qué JSONP, por qué un solo intento con timeout, etc.) por si en algún momento se necesita ese nivel de detalle.</p>
+      <a class="btn" href="https://github.com/recursos-docentes/plantilla-escritos-digitales" target="_blank" rel="noopener">Ver repositorio en GitHub ↗</a>
+    </div>
+
+    <div class="panel-nav"><button class="prev">← Anterior</button><button disabled>Siguiente →</button></div>
+  </section>
+
+  <footer>
+    Tema visual: Crema y tinta
+  </footer>
+
+</div>
+
+<script>
+  var order = ["arquitectura","descargar","preguntas","pegar-html","planilla","publicar-app","conectar","publicar-html","repo"];
+
+  function activate(id){
+    order.forEach(function(key){
+      document.getElementById('panel-'+key).classList.toggle('active', key===id);
+    });
+    document.querySelectorAll('.tab-btn').forEach(function(btn){
+      btn.classList.toggle('active', btn.getAttribute('data-tab')===id);
+    });
+    try { history.replaceState(null, '', '#'+id); } catch(e) {}
+    window.scrollTo({top:0, behavior:'instant'});
+  }
+
+  document.querySelectorAll('.tab-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ activate(btn.getAttribute('data-tab')); });
+  });
+
+  document.querySelectorAll('.panel-nav .next').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var current = order.indexOf(btn.closest('.panel').id.replace('panel-',''));
+      if(current < order.length-1) activate(order[current+1]);
+    });
+  });
+  document.querySelectorAll('.panel-nav .prev').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var current = order.indexOf(btn.closest('.panel').id.replace('panel-',''));
+      if(current > 0) activate(order[current-1]);
+    });
+  });
+
+  document.querySelectorAll('.copybtn[data-copy]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      navigator.clipboard.writeText(btn.getAttribute('data-copy')).then(function(){
+        btn.textContent = '✓ Copiado';
+        btn.classList.add('copied');
+        setTimeout(function(){ btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 1800);
+      });
+    });
+  });
+  var promptBtn = document.getElementById('copyPrompt');
+  if(promptBtn){
+    promptBtn.addEventListener('click', function(){
+      var text = document.getElementById('promptText').innerText;
+      navigator.clipboard.writeText(text).then(function(){
+        promptBtn.textContent = '✓ Copiado';
+        promptBtn.classList.add('copied');
+        setTimeout(function(){ promptBtn.textContent = 'Copiar'; promptBtn.classList.remove('copied'); }, 1800);
+      });
+    });
+  }
+
+  var initial = 'arquitectura';
+  try {
+    var h = (location.hash || '').replace('#','');
+    if(order.indexOf(h) !== -1) initial = h;
+  } catch(e) {}
+  activate(initial);
+</script>
+</body>
+</html>
