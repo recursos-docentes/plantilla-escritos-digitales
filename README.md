@@ -1,6 +1,6 @@
 # Plantilla de escritos digitales
  
-Base reutilizable para armar exámenes digitales autocorregidos: un único
+Base reutilizable para armar evaluaciones digitales autocorregidos: un único
 archivo HTML (sin dependencias externas más que una fuente opcional de
 Google Fonts) más un script de Google Apps Script que corrige y guarda cada
 intento en una planilla de Google Sheets — pensada para usarse en la sala de
